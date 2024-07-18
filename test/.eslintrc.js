@@ -9,7 +9,7 @@ module.exports = {
   },
   rules: {
     // These rules dont like the use of devDependencies - which test code uses often.
-    'node/no-unpublished-require': 0,
-    'node/no-missing-require': 0,
+    "node/no-unpublished-require": 0,
+    "node/no-missing-require": 0,
   },
 };
