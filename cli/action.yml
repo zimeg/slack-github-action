@@ -103,8 +103,6 @@ runs:
         exit_code=$?
         set -e
 
-        echo "$output"
-
         echo "ok=$([ $exit_code -eq 0 ] && echo 'true' || echo 'false')" >> "$GITHUB_OUTPUT"
         echo "time=$(date +%s)" >> "$GITHUB_OUTPUT"
 
