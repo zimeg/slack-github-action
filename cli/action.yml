@@ -99,7 +99,7 @@ runs:
         fi
 
         set +e
-        output=$(slack $args 2>&1)
+        output=$(slack $args 2>&1 | tee /dev/stderr)
         exit_code=$?
         set -e
 
@@ -139,10 +139,10 @@ runs:
         }
 
         Write-Output "DEBUG: Running: slack $args"
-        $output = slack $args.Split(' ') 2>&1 | Out-String
+        $outputFile = New-TemporaryFile
+        slack $args.Split(' ') 2>&1 | Tee-Object -FilePath $outputFile.FullName
         $exit_code = $LASTEXITCODE
-
-        Write-Output $output
+        $output = Get-Content $outputFile.FullName -Raw
 
         "ok=$( if ($exit_code -eq 0) { 'true' } else { 'false' } )" >> $env:GITHUB_OUTPUT
         "time=$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())" >> $env:GITHUB_OUTPUT
