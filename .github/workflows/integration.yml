@@ -269,5 +269,5 @@ jobs:
       - name: "integration(cli): run a slack cli version check"
         uses: ./cli
         with:
-          command: "version --verbose"
+          command: "version"
           version: "3.13.0-fix-windows-ci-feature"
