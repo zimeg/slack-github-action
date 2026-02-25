@@ -51,7 +51,7 @@ runs:
     - name: Add Slack CLI to PATH (Windows)
       if: steps.slack-cli-check.outputs.cli-exists != 'true' && runner.os == 'Windows'
       shell: pwsh
-      run: Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\.slack\bin" # zizmor: ignore[github-env]
+      run: Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\AppData\Local\slack-cli\bin" # zizmor: ignore[github-env]
 
     - name: Install Slack CLI (Linux/macOS)
       if: >-
