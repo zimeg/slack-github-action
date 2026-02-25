@@ -269,4 +269,4 @@ jobs:
       - name: "integration(cli): run a slack cli version check"
         uses: ./cli
         with:
-          command: "version"
+          command: "version --verbose"
