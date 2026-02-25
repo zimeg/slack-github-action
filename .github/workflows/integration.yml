@@ -12,7 +12,7 @@ on:
 
 jobs:
   integration:
-    name: Run integration tests
+    name: Run API tests
     runs-on: ubuntu-latest
     environment: staging
     permissions:

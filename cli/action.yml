@@ -125,113 +125,15 @@ runs:
         SLACK_COMMAND: ${{ inputs.command }}
         SLACK_TOKEN: ${{ inputs.token }}
       run: |
-        Write-Output "DEBUG: PATH entries:"
-        $env:PATH -split ';' | Where-Object { $_ -match 'slack' } | ForEach-Object { Write-Output "  $_" }
-        Write-Output "DEBUG: Looking for slack binary..."
-        Get-Command slack -ErrorAction SilentlyContinue | Format-List
-        $slackDir = "$env:USERPROFILE\AppData\Local\slack-cli\bin"
-        Write-Output "DEBUG: Contents of ${slackDir}:"
-        if (Test-Path $slackDir) { Get-ChildItem $slackDir } else { Write-Output "  Directory not found!" }
-
-        # Pre-create all .slack filesystem structures to eliminate lazy creation as a suspect
-        $slackConfigDir = "$env:USERPROFILE\.slack"
-        if (-not (Test-Path $slackConfigDir)) { New-Item -ItemType Directory -Path $slackConfigDir -Force | Out-Null }
-
-        $credsPath = "$slackConfigDir\credentials.json"
-        if (-not (Test-Path $credsPath)) { Set-Content -Path $credsPath -Value "{}`n" }
-
-        $configPath = "$slackConfigDir\config.json"
-        if (-not (Test-Path $configPath)) { Set-Content -Path $configPath -Value "{}`n" }
-
-        $logsDir = "$slackConfigDir\logs"
-        if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
-
-        $configSubDir = "$slackConfigDir\config"
-        if (-not (Test-Path $configSubDir)) { New-Item -ItemType Directory -Path $configSubDir -Force | Out-Null }
-
-        # Permission diagnostics
-        Write-Output "DEBUG: .slack directory contents:"
-        Get-ChildItem -Path $slackConfigDir -Recurse | ForEach-Object { Write-Output "  $($_.FullName) [$(if($_.PSIsContainer){'dir'}else{$_.Length.ToString() + 'b'})]" }
-
-        Write-Output "DEBUG: Testing file read/write access..."
-        try {
-          $content = Get-Content $credsPath -Raw
-          Write-Output "  credentials.json readable: '$content'"
-        } catch {
-          Write-Output "  ERROR reading credentials.json: $_"
-        }
-
-        try {
-          $testFile = "$slackConfigDir\test-write.tmp"
-          Set-Content -Path $testFile -Value "test"
-          Remove-Item $testFile
-          Write-Output "  .slack directory writable: OK"
-        } catch {
-          Write-Output "  ERROR writing to .slack directory: $_"
-        }
-
         $cliArgs = "$env:SLACK_COMMAND --skip-update"
         if ($env:SLACK_TOKEN) {
           $cliArgs = "$cliArgs --token $env:SLACK_TOKEN"
         }
 
-        $slackExe = (Get-Command slack).Source
-        Write-Output "DEBUG: Starting at $(Get-Date -Format 'HH:mm:ss.fff'): $slackExe $cliArgs"
-
-        # Use .NET Process API directly for reliable timeout + output capture
-        $psi = [System.Diagnostics.ProcessStartInfo]::new($slackExe, $cliArgs)
-        $psi.UseShellExecute = $false
-        $psi.RedirectStandardOutput = $true
-        $psi.RedirectStandardError = $true
-        $psi.CreateNoWindow = $true
-
-        $proc = [System.Diagnostics.Process]::new()
-        $proc.StartInfo = $psi
-
-        try {
-          $proc.Start() | Out-Null
-          Write-Output "DEBUG: Process started with PID $($proc.Id)"
-        } catch {
-          Write-Output "ERROR: Failed to start process: $_"
-          Write-Output $_.ScriptStackTrace
-          exit 1
-        }
-
-        # Read stdout/stderr asynchronously to avoid pipe buffer deadlock
-        $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
-        $stderrTask = $proc.StandardError.ReadToEndAsync()
-
-        $exited = $proc.WaitForExit(60000)  # 60 second timeout
-
-        if (-not $exited) {
-          Write-Output "ERROR: slack CLI hung for 60s, dumping diagnostics..."
-          Write-Output "DEBUG: Process ID: $($proc.Id)"
-          Write-Output "DEBUG: Process threads:"
-          try {
-            Get-Process -Id $proc.Id | Select-Object -ExpandProperty Threads | Format-Table Id, ThreadState, WaitReason -AutoSize
-          } catch {
-            Write-Output "  Could not get thread info: $_"
-          }
-          $proc.Kill()
-          $proc.WaitForExit(5000)
-          # After kill, async reads will complete with whatever was buffered
-          [void]$stdoutTask.Wait(5000)
-          [void]$stderrTask.Wait(5000)
-          Write-Output "DEBUG: stdout captured:"
-          Write-Output $stdoutTask.Result
-          Write-Output "DEBUG: stderr captured:"
-          Write-Output $stderrTask.Result
-          $exit_code = 1
-        } else {
-          [void]$stdoutTask.Wait(5000)
-          [void]$stderrTask.Wait(5000)
-          $exit_code = $proc.ExitCode
-          Write-Output "DEBUG: CLI completed at $(Get-Date -Format 'HH:mm:ss.fff') with exit code $exit_code"
-          Write-Output $stdoutTask.Result
-          if ($stderrTask.Result) { Write-Output "DEBUG: stderr: $($stderrTask.Result)" }
-        }
-
-        $output = if ($stdoutTask.IsCompleted) { $stdoutTask.Result } else { "" }
+        $outputFile = New-TemporaryFile
+        slack $cliArgs.Split(' ') 2>&1 | Tee-Object -FilePath $outputFile.FullName
+        $exit_code = $LASTEXITCODE
+        $output = Get-Content $outputFile.FullName -Raw
 
         "ok=$( if ($exit_code -eq 0) { 'true' } else { 'false' } )" >> $env:GITHUB_OUTPUT
         "time=$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())" >> $env:GITHUB_OUTPUT
