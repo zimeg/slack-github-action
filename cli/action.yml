@@ -133,6 +133,17 @@ runs:
         Write-Output "DEBUG: Contents of ${slackDir}:"
         if (Test-Path $slackDir) { Get-ChildItem $slackDir } else { Write-Output "  Directory not found!" }
 
+        # Pre-create credentials file to avoid write/read race
+        $slackConfigDir = "$env:USERPROFILE\.slack"
+        if (-not (Test-Path $slackConfigDir)) { New-Item -ItemType Directory -Path $slackConfigDir -Force | Out-Null }
+        $credsPath = "$slackConfigDir\credentials.json"
+        if (-not (Test-Path $credsPath)) {
+          Set-Content -Path $credsPath -Value "{}`n"
+          Write-Output "DEBUG: Pre-created empty credentials.json"
+        } else {
+          Write-Output "DEBUG: credentials.json already exists"
+        }
+
         $args = "$env:SLACK_COMMAND --skip-update"
         if ($env:SLACK_TOKEN) {
           $args = "$args --token $env:SLACK_TOKEN"
