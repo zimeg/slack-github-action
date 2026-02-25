@@ -267,7 +267,6 @@ jobs:
           ref: ${{ inputs.ref || github.event.pull_request.head.sha || github.sha }}
 
       - name: "integration(cli): run a slack cli version check"
-        id: version
         uses: ./cli
         with:
           command: "version"
