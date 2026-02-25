@@ -14,13 +14,13 @@ inputs:
 outputs:
   ok:
     description: "If the command completed with a '0' exit code."
-    value: ${{ steps.slack-cli.outputs.ok }}
+    value: ${{ steps.slack-cli-unix.outputs.ok || steps.slack-cli-windows.outputs.ok }}
   response:
     description: "The standard output from the CLI command."
-    value: ${{ steps.slack-cli.outputs.response }}
+    value: ${{ steps.slack-cli-unix.outputs.response || steps.slack-cli-windows.outputs.response }}
   time:
     description: "The Unix epoch time that the step completed."
-    value: ${{ steps.slack-cli.outputs.time }}
+    value: ${{ steps.slack-cli-unix.outputs.time || steps.slack-cli-windows.outputs.time }}
 runs:
   using: composite
   steps:
@@ -85,8 +85,9 @@ runs:
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
-    - name: Run Slack CLI command
-      id: slack-cli
+    - name: Run Slack CLI command (Linux/macOS)
+      if: runner.os != 'Windows'
+      id: slack-cli-unix
       shell: bash
       env:
         SLACK_COMMAND: ${{ inputs.command }}
@@ -115,3 +116,33 @@ runs:
           echo "::error::Slack CLI command failed with exit code $exit_code"
           exit $exit_code
         fi
+
+    - name: Run Slack CLI command (Windows)
+      if: runner.os == 'Windows'
+      id: slack-cli-windows
+      shell: pwsh
+      env:
+        SLACK_COMMAND: ${{ inputs.command }}
+        SLACK_TOKEN: ${{ inputs.token }}
+      run: |
+        $args = "$env:SLACK_COMMAND --skip-update"
+        if ($env:SLACK_TOKEN) {
+          $args = "$args --token $env:SLACK_TOKEN"
+        }
+
+        $output = slack $args.Split(' ') 2>&1 | Out-String
+        $exit_code = $LASTEXITCODE
+
+        Write-Output $output
+
+        "ok=$( if ($exit_code -eq 0) { 'true' } else { 'false' } )" >> $env:GITHUB_OUTPUT
+        "time=$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())" >> $env:GITHUB_OUTPUT
+
+        "response<<SLACKCLIEOF" >> $env:GITHUB_OUTPUT
+        $output >> $env:GITHUB_OUTPUT
+        "SLACKCLIEOF" >> $env:GITHUB_OUTPUT
+
+        if ($exit_code -ne 0) {
+          Write-Output "::error::Slack CLI command failed with exit code $exit_code"
+          exit $exit_code
+        }
