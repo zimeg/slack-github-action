@@ -248,6 +248,17 @@ jobs:
         env:
           PAYLOAD_FILE_OUTPUT_TIME: ${{ steps.payload_file.outputs.time }}
 
+      - name: "integration(cli): run a slack cli version check"
+        id: cli-version
+        uses: ./
+        with:
+          command: "version"
+
+      - name: "integration(cli): confirm the cli command succeeded"
+        run: test "$CLI_OK" = "true"
+        env:
+          CLI_OK: ${{ steps.cli-version.outputs.ok }}
+
       - name: "chore(health): check up on recent changes to the health score"
         uses: slackapi/slack-health-score@d58a419f15cdaff97e9aa7f09f95772830ab66f7 # v0.1.1
         with:
