@@ -29,13 +29,13 @@ runs:
       shell: bash
       run: |
         if command -v slack &> /dev/null; then
-          echo "cli-exists=true" >> "$GITHUB_OUTPUT"
+          echo "exists=true" >> "$GITHUB_OUTPUT"
         else
-          echo "cli-exists=false" >> "$GITHUB_OUTPUT"
+          echo "exists=false" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Cache Slack CLI
-      if: steps.slack-cli-check.outputs.cli-exists != 'true'
+      if: steps.slack-cli-check.outputs.exists != 'true'
       id: cache-cli
       uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       with:
@@ -43,19 +43,19 @@ runs:
           ${{ runner.os == 'Windows' && format('{0}\AppData\Local\slack-cli', env.USERPROFILE) || format('{0}/.slack/bin', env.HOME) }}
         key: slack-cli-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
 
-    - name: Add Slack CLI to PATH (Linux/macOS)
-      if: steps.slack-cli-check.outputs.cli-exists != 'true' && runner.os != 'Windows'
+    - name: Add Slack CLI to PATH
+      if: steps.slack-cli-check.outputs.exists != 'true' && runner.os != 'Windows'
       shell: bash
       run: echo "$HOME/.slack/bin" >> "$GITHUB_PATH" # zizmor: ignore[github-env]
 
-    - name: Add Slack CLI to PATH (Windows)
-      if: steps.slack-cli-check.outputs.cli-exists != 'true' && runner.os == 'Windows'
+    - name: Add Slack CLI to PATH
+      if: steps.slack-cli-check.outputs.exists != 'true' && runner.os == 'Windows'
       shell: pwsh
       run: Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\AppData\Local\slack-cli\bin" # zizmor: ignore[github-env]
 
-    - name: Install Slack CLI (Linux/macOS)
+    - name: Install Slack CLI
       if: >-
-        steps.slack-cli-check.outputs.cli-exists != 'true' &&
+        steps.slack-cli-check.outputs.exists != 'true' &&
         steps.cache-cli.outputs.cache-hit != 'true' &&
         runner.os != 'Windows'
       shell: bash
@@ -68,9 +68,9 @@ runs:
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
-    - name: Install Slack CLI (Windows)
+    - name: Install Slack CLI
       if: >-
-        steps.slack-cli-check.outputs.cli-exists != 'true' &&
+        steps.slack-cli-check.outputs.exists != 'true' &&
         steps.cache-cli.outputs.cache-hit != 'true' &&
         runner.os == 'Windows'
       shell: pwsh
@@ -85,7 +85,7 @@ runs:
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
-    - name: Run Slack CLI command (Linux/macOS)
+    - name: Run Slack CLI command
       if: runner.os != 'Windows'
       id: slack-cli-unix
       shell: bash
@@ -115,7 +115,7 @@ runs:
           exit $exit_code
         fi
 
-    - name: Run Slack CLI command (Windows)
+    - name: Run Slack CLI command
       if: runner.os == 'Windows'
       id: slack-cli-windows
       shell: pwsh
