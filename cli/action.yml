@@ -77,10 +77,10 @@ runs:
       run: |
         if ($env:SLACK_CLI_VERSION) {
           $installer = Join-Path $env:TEMP "install-slack-cli.ps1"
-          Invoke-WebRequest -Uri "https://downloads.slack-edge.com/slack-cli/install-windows-dev.ps1" -OutFile $installer
+          Invoke-WebRequest -Uri "https://downloads.slack-edge.com/slack-cli/install-windows.ps1" -OutFile $installer
           & $installer -v $env:SLACK_CLI_VERSION
         } else {
-          irm https://downloads.slack-edge.com/slack-cli/install-windows-dev.ps1 | iex
+          irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex
         }
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}

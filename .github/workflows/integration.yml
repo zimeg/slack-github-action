@@ -270,7 +270,7 @@ jobs:
         uses: ./cli
         with:
           command: "version"
-          version: "3.13.0-fix-windows-ci-feature"
+          version: "3.14.0"
 
       - name: "test(cli): run a slack cli version check again"
         uses: ./cli
