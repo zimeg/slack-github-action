@@ -93,6 +93,9 @@ runs:
         SLACK_TOKEN: ${{ inputs.token }}
       run: |
         args="$SLACK_COMMAND --skip-update"
+        if [ "$RUNNER_DEBUG" = "1" ]; then
+          args="$args --verbose"
+        fi
         if [ -n "$SLACK_TOKEN" ]; then
           args="$args --token $SLACK_TOKEN"
         fi
@@ -122,6 +125,9 @@ runs:
         SLACK_TOKEN: ${{ inputs.token }}
       run: |
         $cliArgs = "$env:SLACK_COMMAND --skip-update"
+        if ($env:RUNNER_DEBUG -eq "1") {
+          $cliArgs = "$cliArgs --verbose"
+        }
         if ($env:SLACK_TOKEN) {
           $cliArgs = "$cliArgs --token $env:SLACK_TOKEN"
         }
