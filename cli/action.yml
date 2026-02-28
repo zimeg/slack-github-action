@@ -53,7 +53,7 @@ runs:
       shell: pwsh
       run: Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\AppData\Local\slack-cli\bin" # zizmor: ignore[github-env]
 
-    - name: Install Slack CLI
+    - name: Bash Install Slack CLI
       if: >-
         steps.slack-cli-check.outputs.exists != 'true' &&
         steps.cache-cli.outputs.cache-hit != 'true' &&
@@ -68,7 +68,7 @@ runs:
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
-    - name: Install Slack CLI
+    - name: Pwsh Install Slack CLI
       if: >-
         steps.slack-cli-check.outputs.exists != 'true' &&
         steps.cache-cli.outputs.cache-hit != 'true' &&
