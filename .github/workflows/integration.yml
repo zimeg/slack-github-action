@@ -269,10 +269,23 @@ jobs:
           ref: ${{ inputs.ref || github.event.pull_request.head.sha || github.sha }}
 
       - name: "test(cli): run a slack cli version check"
+        id: version
         uses: ./cli
         with:
           command: "version"
           version: "3.14.0"
+
+      - name: "test(cli): confirm the version check outputs"
+        shell: bash
+        run: |
+          set -ex
+          [ "$CLI_OK" = "true" ]
+          echo "$CLI_TIME" | grep -qE '^[0-9]+$'
+          [ -n "$CLI_RESPONSE" ]
+        env:
+          CLI_OK: ${{ steps.version.outputs.ok }}
+          CLI_RESPONSE: ${{ steps.version.outputs.response }}
+          CLI_TIME: ${{ steps.version.outputs.time }}
 
       - name: "chore: configure the actioneering application"
         shell: bash
