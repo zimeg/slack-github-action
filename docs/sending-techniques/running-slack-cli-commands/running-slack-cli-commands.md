@@ -4,7 +4,7 @@ sidebar_label: Overview
 
 # Running Slack CLI commands
 
-The Slack CLI technique installs and runs [Slack CLI](https://tools.slack.dev/slack-cli/) commands directly from a GitHub Actions workflow.
+The Slack CLI technique installs and runs [Slack CLI](/tools/slack-cli/) commands directly from a GitHub Actions workflow.
 
 This is useful for automating tasks such as deploying apps, managing triggers, or interacting with Slack platform features that are accessible through the CLI.
 
@@ -14,7 +14,7 @@ This is useful for automating tasks such as deploying apps, managing triggers, o
 
 Authentication can be provided in one of two ways:
 
-- **Token input**: Pass a [service token](https://tools.slack.dev/slack-cli/guides/authorizations#service-token-non-interactive) via the `token` input. This is appended as `--token <value>` to the CLI command.
+- **Token input**: Pass a [service token](/authentication/tokens/) via the `token` input. This is appended as `--token <value>` to the CLI command.
 - **Environment variable**: Set `SLACK_SERVICE_TOKEN` as an environment variable in your workflow. The Slack CLI reads this automatically.
 
 ### CLI version
@@ -25,7 +25,7 @@ By default, the latest version of the Slack CLI is installed. To pin a specific 
 - uses: slackapi/slack-github-action/cli@v2
   with:
     command: "version"
-    version: "2.35.0"
+    version: "3.14.0"
 ```
 
 The CLI binary is cached across workflow runs using `actions/cache`, keyed by OS, architecture, and version. If the `slack` command already exists on `PATH`, installation is skipped entirely.
