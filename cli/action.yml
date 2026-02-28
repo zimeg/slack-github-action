@@ -86,6 +86,7 @@ runs:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
     - name: Bash Run Slack CLI command
+      id: slack-cli-unix
       if: runner.os != 'Windows'
       shell: bash
       env:
@@ -118,6 +119,7 @@ runs:
         fi
 
     - name: Pwsh Run Slack CLI command
+      id: slack-cli-windows
       if: runner.os == 'Windows'
       shell: pwsh
       env:
