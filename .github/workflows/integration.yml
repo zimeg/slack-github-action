@@ -251,6 +251,7 @@ jobs:
   cli:
     name: Run CLI tests
     runs-on: ${{ matrix.os }}
+    environment: staging
     strategy:
       matrix:
         os:
@@ -272,7 +273,18 @@ jobs:
           command: "version"
           version: "3.14.0"
 
-      - name: "test(cli): run a slack cli version check again"
+      - name: "chore: configure the actioneering application"
+        shell: bash
+        run: mv .github/resources/.slack .slack
+
+      - name: "test(cli): validate the app manifest"
         uses: ./cli
         with:
-          command: "version"
+          command: "manifest"
+          token: ${{ secrets.SLACK_SERVICE_TOKEN }}
+
+      - name: "test(cli): deploy the app"
+        uses: ./cli
+        with:
+          command: "deploy --app ${{ secrets.SLACK_APP_ID }} --hide-triggers"
+          token: ${{ secrets.SLACK_SERVICE_TOKEN }}
