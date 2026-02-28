@@ -4,7 +4,7 @@ A [service token](/authentication/tokens/#service) is used to install and run [S
 
 ## Setup
 
-For details on how to setup this technique in GitHub Actions, read the [setup](/tools/slack-github-action/sending-techniques/running-slack-cli-commands/running-slack-cli-commands) section of the docs.
+For details on how to setup this technique in GitHub Actions, read the [setup](/tools/slack-github-action/sending-techniques/running-slack-cli-commands/) section of the docs.
 
 ## Example workflows
 
