@@ -287,5 +287,5 @@ jobs:
       - name: "test(cli): deploy the app"
         uses: ./cli
         with:
-          command: "deploy --app ${{ env.SLACK_APP_ID }} --hide-triggers --force"
+          command: "deploy --app ${{ vars.SLACK_APP_ID }} --hide-triggers --force"
           token: ${{ secrets.SLACK_SERVICE_TOKEN }}
