@@ -287,6 +287,25 @@ jobs:
           CLI_RESPONSE: ${{ steps.version.outputs.response }}
           CLI_TIME: ${{ steps.version.outputs.time }}
 
+      - name: "test(cli): run an unknown command"
+        id: unknown
+        continue-on-error: true
+        uses: ./cli
+        with:
+          command: "off"
+
+      - name: "test(cli): confirm the unknown command outputs"
+        shell: bash
+        run: |
+          set -ex
+          [ "$CLI_OK" = "false" ]
+          echo "$CLI_TIME" | grep -qE '^[0-9]+$'
+          [ -n "$CLI_RESPONSE" ]
+        env:
+          CLI_OK: ${{ steps.unknown.outputs.ok }}
+          CLI_RESPONSE: ${{ steps.unknown.outputs.response }}
+          CLI_TIME: ${{ steps.unknown.outputs.time }}
+
       - name: "chore: configure the actioneering application"
         shell: bash
         run: mv .github/resources/.slack .slack
