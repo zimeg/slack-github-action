@@ -212,7 +212,7 @@ jobs:
           webhook: ${{ secrets.SLACK_INCOMING_WEBHOOK }}
           webhook-type: incoming-webhook
           payload: |
-            text: "Incoming webhook test for slack send"
+            text: "Incoming webhook test for the Slack GitHub Action"
             blocks:
               - type: section
                 text:

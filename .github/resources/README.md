@@ -6,7 +6,7 @@ experiments with the [Slack CLI][cli].
 
 ## Overview
 
-This app showcases all four techniques of sending data into Slack and follows
+This app showcases all four techniques of interacting with Slack and follows
 patterns found in the integration tests.
 
 - **Technique 1** Slack Workflow Builder: Use a Slack webhook trigger to start a
