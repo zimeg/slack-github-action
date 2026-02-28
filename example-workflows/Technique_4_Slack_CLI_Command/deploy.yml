@@ -18,5 +18,5 @@ jobs:
       - name: Deploy the app
         uses: slackapi/slack-github-action/cli@v2
         with:
-          command: "deploy --app ${{ vars.SLACK_APP_ID }} --hide-triggers --force"
+          command: "deploy --app ${{ vars.SLACK_APP_ID }} --force"
           token: ${{ secrets.SLACK_SERVICE_TOKEN }}

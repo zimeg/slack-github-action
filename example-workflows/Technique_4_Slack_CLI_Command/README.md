@@ -30,7 +30,7 @@ Run manifest validation on pull requests to catch configuration issues early. Th
 
 ### Manage a collaborator
 
-Add or remove an app collaborator using a manually triggered workflow. This example combines the Slack API technique (`users.lookupByEmail`, `chat.postMessage`) with the CLI technique (`collaborators add/remove`) to look up a user by email, update collaborators, and post a confirmation message.
+Add or remove an app collaborator using a manually triggered workflow with [`workflow_dispatch`](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow). This example combines the Slack API technique ([`users.lookupByEmail`](/reference/methods/users.lookupByEmail), [`chat.postMessage`](/reference/methods/chat.postMessage)) with the CLI technique ([`collaborators add`](/tools/slack-cli/reference/commands/slack_collaborators_add)/[`remove`](/tools/slack-cli/reference/commands/slack_collaborators_remove)) to look up a user by email, update collaborators, and post a confirmation message.
 
 **Related files**:
 

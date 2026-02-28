@@ -6,16 +6,13 @@ sidebar_label: Overview
 
 The Slack CLI technique installs and runs [Slack CLI](/tools/slack-cli/) commands directly from a GitHub Actions workflow.
 
-This is useful for automating tasks such as deploying apps, managing triggers, or interacting with Slack platform features that are accessible through the CLI.
+This is useful for automating tasks such as deploying apps, validating an app manifest, or interacting with Slack platform features that are available with the CLI.
 
 ## Setup
 
 ### Authentication
 
-Authentication can be provided in one of two ways:
-
-- **Token input**: Pass a [service token](/authentication/tokens/) via the `token` input. This is appended as `--token <value>` to the CLI command.
-- **Environment variable**: Set `SLACK_SERVICE_TOKEN` as an environment variable in your workflow. The Slack CLI reads this automatically.
+Pass a [service token](/authentication/tokens/) via the `token` input. This is appended as `--token <value>` to the CLI command. The [`slack auth token`](/tools/slack-cli/reference/commands/slack_auth_token) command can be used to gather this.
 
 ### CLI version
 
@@ -28,11 +25,11 @@ By default, the latest version of the Slack CLI is installed. To pin a specific 
     version: "3.14.0"
 ```
 
-The CLI binary is cached across workflow runs using `actions/cache`, keyed by OS, architecture, and version. If the `slack` command already exists on `PATH`, installation is skipped entirely.
+If the `slack` command already exists on `PATH`, installation is skipped entirely.
 
 ## Usage
 
-Provide a `command` input with the Slack CLI command to run, omitting the `slack` prefix. The `--skip-update` flag is appended automatically.
+Provide a `command` input with the Slack CLI command to run, omitting the `slack` prefix.
 
 ```yaml
 - uses: slackapi/slack-github-action/cli@v2
@@ -47,7 +44,7 @@ When a workflow is re-run with **Enable debug logging**, the action automaticall
 ```yaml
 - uses: slackapi/slack-github-action/cli@v2
   with:
-    command: "deploy --app A0123456789 --verbose"
+    command: "deploy --app ${{ vars.SLACK_APP_ID }} --verbose"
     token: ${{ secrets.SLACK_SERVICE_TOKEN }}
 ```
 
@@ -92,7 +89,7 @@ steps:
   - uses: actions/checkout@v4
   - uses: slackapi/slack-github-action/cli@v2
     with:
-      command: "deploy --app A0123456789 --hide-triggers --force"
+      command: "deploy --app ${{ vars.SLACK_APP_ID }} --force"
       token: ${{ secrets.SLACK_SERVICE_TOKEN }}
 ```
 
