@@ -43,12 +43,12 @@ runs:
           ${{ runner.os == 'Windows' && format('{0}\AppData\Local\slack-cli', env.USERPROFILE) || format('{0}/.slack/bin', env.HOME) }}
         key: slack-cli-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
 
-    - name: Add Slack CLI to PATH
+    - name: Bash Add Slack CLI to PATH
       if: steps.slack-cli-check.outputs.exists != 'true' && runner.os != 'Windows'
       shell: bash
       run: echo "$HOME/.slack/bin" >> "$GITHUB_PATH" # zizmor: ignore[github-env]
 
-    - name: Add Slack CLI to PATH
+    - name: Pwsh Add Slack CLI to PATH
       if: steps.slack-cli-check.outputs.exists != 'true' && runner.os == 'Windows'
       shell: pwsh
       run: Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\AppData\Local\slack-cli\bin" # zizmor: ignore[github-env]
@@ -85,7 +85,7 @@ runs:
       env:
         SLACK_CLI_VERSION: ${{ inputs.version }}
 
-    - name: Run Slack CLI command
+    - name: Bash Run Slack CLI command
       if: runner.os != 'Windows'
       id: slack-cli-unix
       shell: bash
@@ -115,7 +115,7 @@ runs:
           exit $exit_code
         fi
 
-    - name: Run Slack CLI command
+    - name: Pwsh Run Slack CLI command
       if: runner.os == 'Windows'
       id: slack-cli-windows
       shell: pwsh
