@@ -114,7 +114,6 @@ runs:
         echo "SLACKCLIEOF" >> "$GITHUB_OUTPUT"
 
         if [ $exit_code -ne 0 ]; then
-          echo "::error::Slack CLI command failed with exit code $exit_code"
           exit $exit_code
         fi
 
@@ -147,6 +146,5 @@ runs:
         "SLACKCLIEOF" >> $env:GITHUB_OUTPUT
 
         if ($exit_code -ne 0) {
-          Write-Output "::error::Slack CLI command failed with exit code $exit_code"
           exit $exit_code
         }
