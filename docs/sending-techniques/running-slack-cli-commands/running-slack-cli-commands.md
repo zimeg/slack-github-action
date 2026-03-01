@@ -78,7 +78,7 @@ steps:
   - uses: actions/checkout@v4
   - uses: slackapi/slack-github-action/cli@v2
     with:
-      command: "manifest validate"
+      command: "manifest validate --app ${{ vars.SLACK_APP_ID }}"
       token: ${{ secrets.SLACK_SERVICE_TOKEN }}
 ```
 

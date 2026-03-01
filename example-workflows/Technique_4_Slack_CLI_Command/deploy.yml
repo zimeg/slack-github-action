@@ -20,3 +20,12 @@ jobs:
         with:
           command: "deploy --app ${{ vars.SLACK_APP_ID }} --force"
           token: ${{ secrets.SLACK_SERVICE_TOKEN }}
+
+      - name: Post a deployment message
+        uses: slackapi/slack-github-action@v2
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ secrets.SLACK_CHANNEL_ID }}
+            text: "Deployed to Slack from ${{ github.sha }}"

@@ -44,7 +44,7 @@ jobs:
         if: ${{ steps.email.outputs.ok }}
         uses: slackapi/slack-github-action/cli@v2
         with:
-          command: "collaborators ${{ inputs.add && 'add' || 'remove' }} ${{ inputs.email }}"
+          command: "collaborators ${{ inputs.add && 'add' || 'remove' }} ${{ inputs.email }} --app ${{ vars.SLACK_APP_ID }}"
           token: ${{ secrets.SLACK_SERVICE_TOKEN }}
 
       - name: Post a confirmation message
