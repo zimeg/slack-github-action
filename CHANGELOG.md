@@ -1,5 +1,11 @@
 # slack-github-action
 
+## 3.0.7
+
+### Patch Changes
+
+- 0e5b656: ci: use explicit owner and repository and content app token input
+
 ## 3.0.6
 
 ### Patch Changes
