@@ -79,7 +79,7 @@ jobs:
           echo "minor=$(echo "$VERSION" | cut -d. -f1-2)" >> "$GITHUB_OUTPUT"
           echo "$VERSION"
 
-      - name: Check if release already exists
+      - name: Check if release exists
         id: check
         run: |
           if gh release view "$VERSION" &>/dev/null; then
@@ -91,7 +91,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create release branch with built artifacts
+      - name: Create release artifacts
         if: steps.check.outputs.exists == 'false'
         id: release
         run: |
@@ -116,9 +116,9 @@ jobs:
           MAJOR: ${{ steps.version.outputs.major }}
           MINOR: ${{ steps.version.outputs.minor }}
 
-      - name: Create a GitHub release
+      - name: Create GitHub release
         if: steps.check.outputs.exists == 'false'
-        run: gh release create "$VERSION" --target "$SHA" --generate-notes
+        run: gh release create "$VERSION" --target "$SHA" --title "Slack GitHub Action $VERSION" --generate-notes
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA: ${{ steps.release.outputs.sha }}
