@@ -52,10 +52,18 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Gather credentials
+        id: credentials
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: true
+          token: ${{ steps.credentials.outputs.token }}
 
       - name: Setup Node
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -123,4 +131,4 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA: ${{ steps.release.outputs.sha }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.credentials.outputs.token }}
