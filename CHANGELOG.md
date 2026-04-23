@@ -1,5 +1,11 @@
 # slack-github-action
 
+## 3.0.4
+
+### Patch Changes
+
+- 0d5023e: build: keep a stable tag on past release source
+
 ## 3.0.3
 
 ### Patch Changes
