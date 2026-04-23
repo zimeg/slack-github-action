@@ -48,6 +48,7 @@ jobs:
     needs: changelog
     if: needs.changelog.outputs.hasChangesets == 'false'
     runs-on: ubuntu-latest
+    environment: publish
     permissions:
       contents: write
     steps:
