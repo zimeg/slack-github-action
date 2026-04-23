@@ -95,6 +95,7 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         id: release
         run: |
+          awk '/^## /{if(n++)exit}n' CHANGELOG.md | tail -n +3 > RELEASE.md
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "release/$VERSION"
@@ -118,14 +119,8 @@ jobs:
 
       - name: Create GitHub release
         if: steps.check.outputs.exists == 'false'
-        run: gh release create "$VERSION" --target "$SHA" --title "Slack GitHub Action $VERSION" --generate-notes --notes-start-tag stable
+        run: gh release create "$VERSION" --target "$SHA" --title "Slack GitHub Action $VERSION" --notes-file RELEASE.md
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA: ${{ steps.release.outputs.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update stable tag
-        if: steps.check.outputs.exists == 'false'
-        run: |
-          git tag -f stable main
-          git push -f origin stable
