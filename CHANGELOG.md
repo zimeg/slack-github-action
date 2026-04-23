@@ -1,5 +1,11 @@
 # slack-github-action
 
+## 3.0.6
+
+### Patch Changes
+
+- 3543952: ci: sign tag of release with app"
+
 ## 3.0.5
 
 ### Patch Changes
