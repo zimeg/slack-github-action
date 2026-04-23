@@ -18,7 +18,8 @@
     "docs": "TAG=\"v$(npm pkg get version | jq -r)\" && grep -rl 'slackapi/slack-github-action@v' ./docs ./example-workflows | xargs sed -i \"s|slackapi/slack-github-action@v.*|slackapi/slack-github-action@${TAG}|g\" && grep -rl 'slackapi/slack-github-action/cli@v' ./docs ./example-workflows | xargs sed -i \"s|slackapi/slack-github-action/cli@v.*|slackapi/slack-github-action/cli@${TAG}|g\"",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "test": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=test/coverage.txt test/*.spec.js"
+    "test": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=test/coverage.txt test/*.spec.js",
+    "version": "npm run changeset version && npm install && npm run docs"
   },
   "repository": {
     "type": "git",
