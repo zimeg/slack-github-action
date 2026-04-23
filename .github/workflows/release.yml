@@ -78,7 +78,20 @@ jobs:
           echo "minor=$(echo "$VERSION" | cut -d. -f1-2)" >> "$GITHUB_OUTPUT"
           echo "$VERSION"
 
+      - name: Check if release already exists
+        id: check
+        run: |
+          if gh release view "$VERSION" &>/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create release branch with built artifacts
+        if: steps.check.outputs.exists == 'false'
         id: release
         run: |
           git config user.name "github-actions[bot]"
@@ -103,6 +116,7 @@ jobs:
           MINOR: ${{ steps.version.outputs.minor }}
 
       - name: Create a GitHub release
+        if: steps.check.outputs.exists == 'false'
         run: gh release create "$VERSION" --target "$SHA" --generate-notes
         env:
           VERSION: ${{ steps.version.outputs.version }}
