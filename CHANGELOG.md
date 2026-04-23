@@ -1,5 +1,11 @@
 # slack-github-action
 
+## 3.0.5
+
+### Patch Changes
+
+- e359c43: docs: write release notes from changelog
+
 ## 3.0.4
 
 ### Patch Changes
