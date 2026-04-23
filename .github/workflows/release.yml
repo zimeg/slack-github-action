@@ -118,8 +118,14 @@ jobs:
 
       - name: Create GitHub release
         if: steps.check.outputs.exists == 'false'
-        run: gh release create "$VERSION" --target "$SHA" --title "Slack GitHub Action $VERSION" --generate-notes
+        run: gh release create "$VERSION" --target "$SHA" --title "Slack GitHub Action $VERSION" --generate-notes --notes-start-tag stable
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA: ${{ steps.release.outputs.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update stable tag
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git tag -f stable main
+          git push -f origin stable
